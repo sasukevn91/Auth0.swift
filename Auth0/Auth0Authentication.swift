@@ -28,14 +28,16 @@ import Foundation
 struct Auth0Authentication: Authentication {
 
     let clientId: String
+    let clientSecret: String
     let url: URL
     var telemetry: Telemetry
     var logger: Logger?
 
     let session: URLSession
 
-    init(clientId: String, url: URL, session: URLSession = URLSession.shared, telemetry: Telemetry = Telemetry()) {
+    init(clientId: String, clientSecret: String, url: URL, session: URLSession = URLSession.shared, telemetry: Telemetry = Telemetry()) {
         self.clientId = clientId
+        self.clientSecret = clientSecret
         self.url = url
         self.session = session
         self.telemetry = telemetry
@@ -378,7 +380,8 @@ struct Auth0Authentication: Authentication {
 
     func tokenExchange(withParameters parameters: [String: Any]) -> Request<Credentials, AuthenticationError> {
         var payload: [String: Any] = [
-            "client_id": self.clientId
+            "client_id": self.clientId,
+            "client_secret": self.clientSecret
             ]
         parameters.forEach { payload[$0] = $1 }
         let token = URL(string: "/oauth/token", relativeTo: self.url)!

@@ -90,6 +90,7 @@ final class MobileWebAuth: BaseWebAuth, WebAuth {
     static let ViewSFSafariViewController = "sfsvc"
 
     init(clientId: String,
+         clientSecret: String,
          url: URL,
          presenter: ControllerModalPresenter = ControllerModalPresenter(),
          storage: TransactionStore = TransactionStore.shared,
@@ -107,6 +108,7 @@ final class MobileWebAuth: BaseWebAuth, WebAuth {
 
         super.init(platform: "ios",
                    clientId: clientId,
+                   clientSecret: clientSecret,
                    url: url,
                    storage: storage,
                    telemetry: telemetry)

@@ -32,11 +32,11 @@ public class _ObjectiveOAuth2: NSObject {
 
     @objc public override init() {
         let values = plistValues(bundle: Bundle.main)!
-        self.webAuth = Auth0WebAuth(clientId: values.clientId, url: .a0_url(values.domain))
+        self.webAuth = Auth0WebAuth(clientId: values.clientId, clientSecret: values.clientSecret, url: .a0_url(values.domain))
     }
 
     @objc public init(clientId: String, url: URL) {
-        self.webAuth = Auth0WebAuth(clientId: clientId, url: url)
+        self.webAuth = Auth0WebAuth(clientId: clientId, clientSecret: "", url: url)
     }
 
     @objc public func addParameters(_ parameters: [String: String]) {

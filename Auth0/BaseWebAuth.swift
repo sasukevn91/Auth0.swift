@@ -28,6 +28,7 @@ import AuthenticationServices
 class BaseWebAuth: WebAuthenticatable {
 
     let clientId: String
+    let clientSecret: String
     let url: URL
     let storage: TransactionStore
     var telemetry: Telemetry
@@ -49,13 +50,14 @@ class BaseWebAuth: WebAuthenticatable {
         guard let bundleIdentifier = Bundle.main.bundleIdentifier else { return nil }
         var components = URLComponents(url: self.url, resolvingAgainstBaseURL: true)
         components?.scheme = self.universalLink ? "https" : bundleIdentifier
-        return components?.url?
-            .appendingPathComponent(self.platform)
-            .appendingPathComponent(bundleIdentifier)
-            .appendingPathComponent("callback")
+        return components?.url
+//            .appendingPathComponent(self.platform)
+//            .appendingPathComponent(bundleIdentifier)
+//            .appendingPathComponent("callback")
     }()
 
-    init(platform: String, clientId: String, url: URL, storage: TransactionStore, telemetry: Telemetry) {
+    init(platform: String, clientId: String, clientSecret: String, url: URL, storage: TransactionStore, telemetry: Telemetry) {
+        self.clientSecret = clientSecret
         self.platform = platform
         self.clientId = clientId
         self.url = url
@@ -260,7 +262,7 @@ class BaseWebAuth: WebAuthenticatable {
         var entries = defaults
         entries["client_id"] = self.clientId
         entries["redirect_uri"] = redirectURL.absoluteString
-        entries["scope"] = "openid"
+        entries["scope"] = "offline_access openid"
         entries["state"] = state
         entries["response_type"] = self.responseType.map { $0.label! }.joined(separator: " ")
 
@@ -286,7 +288,7 @@ class BaseWebAuth: WebAuthenticatable {
     }
 
     private func handler(_ redirectURL: URL) -> OAuth2Grant {
-        var authentication = Auth0Authentication(clientId: self.clientId, url: self.url, telemetry: self.telemetry)
+        var authentication = Auth0Authentication(clientId: self.clientId, clientSecret: self.clientSecret, url: self.url, telemetry: self.telemetry)
         if self.responseType.contains([.code]) { // both Hybrid and Code flow
             authentication.logger = self.logger
             return PKCE(authentication: authentication,
@@ -324,7 +326,7 @@ class BaseWebAuth: WebAuthenticatable {
 extension Auth0Authentication {
 
     func webAuth(withConnection connection: String) -> WebAuth {
-        let webAuth = Auth0WebAuth(clientId: self.clientId, url: self.url, telemetry: self.telemetry)
+        let webAuth = Auth0WebAuth(clientId: self.clientId, clientSecret: "", url: self.url, telemetry: self.telemetry)
         return webAuth
             .logging(enabled: self.logger != nil)
             .connection(connection)

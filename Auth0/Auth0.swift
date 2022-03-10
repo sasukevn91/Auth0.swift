@@ -35,8 +35,8 @@ import Foundation
 
  - returns: Auth0 Authentication API
  */
-public func authentication(clientId: String, domain: String, session: URLSession = .shared) -> Authentication {
-    return Auth0Authentication(clientId: clientId, url: .a0_url(domain), session: session)
+public func authentication(clientId: String, clientSecret: String, domain: String, session: URLSession = .shared) -> Authentication {
+    return Auth0Authentication(clientId: clientId, clientSecret: clientSecret, url: .a0_url(domain), session: session)
 }
 
 /**
@@ -69,7 +69,7 @@ public func authentication(clientId: String, domain: String, session: URLSession
  */
 public func authentication(session: URLSession = .shared, bundle: Bundle = .main) -> Authentication {
     let values = plistValues(bundle: bundle)!
-    return authentication(clientId: values.clientId, domain: values.domain, session: session)
+    return authentication(clientId: values.clientId, clientSecret: values.clientSecret, domain: values.domain, session: session)
 }
 
 /**
@@ -137,7 +137,7 @@ public func users(token: String, domain: String, session: URLSession = .shared) 
     return Management(token: token, url: .a0_url(domain), session: session)
 }
 
-func plistValues(bundle: Bundle) -> (clientId: String, domain: String)? {
+func plistValues(bundle: Bundle) -> (clientId: String, clientSecret: String, domain: String)? {
     guard
         let path = bundle.path(forResource: "Auth0", ofType: "plist"),
         let values = NSDictionary(contentsOfFile: path) as? [String: Any]
@@ -148,11 +148,12 @@ func plistValues(bundle: Bundle) -> (clientId: String, domain: String)? {
 
     guard
         let clientId = values["ClientId"] as? String,
-        let domain = values["Domain"] as? String
+        let domain = values["Domain"] as? String,
+        let clientSecret = values["Client Secret"] as? String
         else {
             print("Auth0.plist file at \(path) is missing 'ClientId' and/or 'Domain' entries!")
             print("File currently has the following entries: \(values)")
             return nil
         }
-    return (clientId: clientId, domain: domain)
+    return (clientId: clientId, clientSecret: clientSecret, domain: domain)
 }

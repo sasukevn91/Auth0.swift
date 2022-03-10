@@ -52,7 +52,7 @@ import Foundation
  */
 public func webAuth(bundle: Bundle = Bundle.main) -> WebAuth {
     let values = plistValues(bundle: bundle)!
-    return webAuth(clientId: values.clientId, domain: values.domain)
+    return webAuth(clientId: values.clientId, clientSecret: values.clientSecret, domain: values.domain)
 }
 
 /**
@@ -67,8 +67,8 @@ public func webAuth(bundle: Bundle = Bundle.main) -> WebAuth {
 
  - returns: Auth0 WebAuth component
  */
-public func webAuth(clientId: String, domain: String) -> WebAuth {
-    return Auth0WebAuth(clientId: clientId, url: .a0_url(domain))
+public func webAuth(clientId: String, clientSecret: String, domain: String) -> WebAuth {
+    return Auth0WebAuth(clientId: clientId, clientSecret: clientSecret, url: .a0_url(domain))
 }
 
 /// WebAuth Authentication using Auth0
